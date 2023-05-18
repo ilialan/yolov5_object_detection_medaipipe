@@ -71,7 +71,7 @@ absl::Status RunMPPGraph() {
   if (load_video) {
     capture.open(absl::GetFlag(FLAGS_input_video_path));
   } else {
-    capture.open(0);
+    capture.open(1);
   }
   RET_CHECK(capture.isOpened());
 

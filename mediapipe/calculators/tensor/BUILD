@@ -706,6 +706,7 @@ cc_test(
 mediapipe_proto_library(
     name = "tensors_to_detections_calculator_proto",
     srcs = ["tensors_to_detections_calculator.proto"],
+    visibility = ["//visibility:public"],
     deps = [
         "//mediapipe/framework:calculator_options_proto",
         "//mediapipe/framework:calculator_proto",

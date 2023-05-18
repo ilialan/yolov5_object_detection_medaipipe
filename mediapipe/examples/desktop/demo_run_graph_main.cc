@@ -61,7 +61,8 @@ absl::Status RunMPPGraph() {
   if (load_video) {
     capture.open(absl::GetFlag(FLAGS_input_video_path));
   } else {
-    capture.open(0);
+//    capture.open("http://10.0.0.1:8080/video");
+    capture.open(1);
   }
   RET_CHECK(capture.isOpened());
 

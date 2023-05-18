@@ -1,0 +1,102 @@
+# MediaPipe graph to detect lenses targets and markers. (CPU input, and inference is executed on
+# CPU.)
+#
+# It is required that "yolov5n-fp16.tflite" is available at
+# path during execution.
+#
+# EXAMPLE:
+#   node {
+#     calculator: "Yolov5ObjectDetectionCpu"
+#     input_stream: "IMAGE:image"
+#     output_stream: "DETECTIONS:detection_tensors"
+#   }
+
+type: "Yolov5ObjectDetectionCpu"
+
+# CPU image. (ImageFrame)
+input_stream: "IMAGE:image"
+
+
+# Detected objects. (std::vector<Detection>)
+# NOTE: there will not be an output packet in the DETECTIONS stream for this
+# particular timestamp if none of objects detected. However, the MediaPipe
+# framework will internally inform the downstream calculators of the absence of
+# this packet so that they don't wait for it unnecessarily.
+output_stream: "DETECTIONS:detections"
+
+
+# Transforms the input image into a 640X640 tensor while keeping the aspect
+# ratio (what is expected by the corresponding face detection model), resulting
+# in potential letter boxing in the transformed image.
+node: {
+  calculator: "ImageToTensorCalculator"
+  input_stream: "IMAGE:image"
+  output_stream: "TENSORS:input_tensors"
+  output_stream: "MATRIX:transform_matrix"
+  options: {
+    [mediapipe.ImageToTensorCalculatorOptions.ext] {
+      output_tensor_width: 640
+      output_tensor_height: 640
+      keep_aspect_ratio: true
+      output_tensor_float_range {
+        min: 0.0
+        max: 1.0
+      }
+    }
+  }
+}
+
+
+node {
+  calculator: "InferenceCalculator"
+  input_stream: "TENSORS:input_tensors"
+  output_stream: "TENSORS:detection_tensors"
+  options: {
+    [mediapipe.InferenceCalculatorOptions.ext] {
+      model_path: "mediapipe/modules/yolov5_object_detection/yolov5n-fp16.tflite"
+      delegate {
+         xnnpack {}  # for cpu optimization on Desktop
+      }
+    }
+  }
+}
+
+node {
+  calculator: "Yolov5TensorsToDetectionsCalculator"
+  input_stream: "TENSORS:detection_tensors"
+  output_stream: "DETECTIONS:unfiltered_detections"
+  options: {
+    [mediapipe.TensorsToDetectionsCalculatorOptions.ext] {
+      num_classes: 80
+      num_boxes: 25200
+      num_coords: 4
+      box_coord_offset: 0
+      sigmoid_score: false
+      reverse_output_order: true
+      min_score_thresh: 0.5 #0.25
+    }
+  }
+}
+
+# Performs non-max suppression to remove excessive detections.
+node {
+  calculator: "NonMaxSuppressionCalculator"
+  input_stream: "unfiltered_detections"
+  output_stream: "filtered_detections"
+  options: {
+    [mediapipe.NonMaxSuppressionCalculatorOptions.ext] {
+      min_suppression_threshold: 0.3 #0.45
+      overlap_type: INTERSECTION_OVER_UNION
+      algorithm: WEIGHTED
+    }
+  }
+}
+
+# Projects the detections from input tensor to the corresponding locations on
+# the original image (input to the graph).
+node {
+  calculator: "DetectionProjectionCalculator"
+  input_stream: "DETECTIONS:filtered_detections"
+  input_stream: "PROJECTION_MATRIX:transform_matrix"
+  output_stream: "DETECTIONS:detections"
+}
