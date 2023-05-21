@@ -1,7 +1,7 @@
 # MediaPipe graph to detect lenses targets and markers. (GPU input, and inference is executed on
 # CPU.)
 #
-# It is required that "yolov5n-fp16.tflite" is available at
+# It is required that "yolov5n_320_fp16.tflite" is available at
 # path during execution.
 #
 # EXAMPLE:
