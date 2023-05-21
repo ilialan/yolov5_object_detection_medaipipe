@@ -34,6 +34,7 @@ mediapipe_simple_subgraph(
         "//mediapipe/calculators/tensor:image_to_tensor_calculator",
         "//mediapipe/calculators/tensor:inference_calculator",
         "//mediapipe/calculators/customized:yolov5_tensors_to_detections_calculator",
+        "//mediapipe/calculators/util:detection_label_id_to_text_calculator",
         "//mediapipe/calculators/util:non_max_suppression_calculator",
         "//mediapipe/calculators/util:detection_projection_calculator",
     ],
@@ -47,13 +48,10 @@ mediapipe_simple_subgraph(
         "//mediapipe/calculators/tensor:image_to_tensor_calculator",
         "//mediapipe/calculators/tensor:inference_calculator",
         "//mediapipe/calculators/customized:yolov5_tensors_to_detections_calculator",
+        "//mediapipe/calculators/util:detection_label_id_to_text_calculator",
         "//mediapipe/calculators/util:non_max_suppression_calculator",
         "//mediapipe/calculators/util:detection_projection_calculator",
     ],
 )
 
-mediapipe_files(
-    srcs = [
-        "yolov5n-fp16.tflite",
-    ],
-)
+exports_files(["yolov5n_320_fp16.tflite", "labels.txt"])

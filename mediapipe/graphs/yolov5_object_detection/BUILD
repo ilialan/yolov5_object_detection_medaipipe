@@ -23,19 +23,42 @@ package(default_visibility = ["//visibility:public"])
 cc_library(
     name = "desktop_live_calculators",
     deps = [
-        "//mediapipe/calculators/core:flow_limiter_calculator",
-        "//mediapipe/modules/yolov5_object_detection:yolov5_object_detection_cpu",
         "//mediapipe/calculators/util:annotation_overlay_calculator",
         "//mediapipe/calculators/util:detections_to_render_data_calculator",
+        "//mediapipe/modules/yolov5_object_detection:yolov5_object_detection_cpu",
     ],
 )
 
 cc_library(
     name = "desktop_live_gpu_calculators",
     deps = [
-        "//mediapipe/calculators/core:flow_limiter_calculator",
         "//mediapipe/calculators/util:annotation_overlay_calculator",
         "//mediapipe/calculators/util:detections_to_render_data_calculator",
         "//mediapipe/modules/yolov5_object_detection:yolov5_object_detection_gpu",
     ],
+)
+
+cc_library(
+    name = "mobile_calculators",
+    deps = [
+        "//mediapipe/calculators/core:flow_limiter_calculator",
+        "//mediapipe/calculators/util:annotation_overlay_calculator",
+        "//mediapipe/calculators/util:detections_to_render_data_calculator",
+        "//mediapipe/modules/yolov5_object_detection:yolov5_object_detection_gpu",
+        "//mediapipe/modules/yolov5_object_detection:yolov5_object_detection_cpu",
+    ],
+)
+
+mediapipe_binary_graph(
+    name = "yolov5_object_detection_mobile_gpu_binary_graph",
+    graph = "yolov5_mobile_gpu.pbtxt",
+    output_name = "yolov5_mobile_gpu.binarypb",
+    deps = [":mobile_calculators"],
+)
+
+mediapipe_binary_graph(
+    name = "yolov5_object_detection_mobile_cpu_binary_graph",
+    graph = "yolov5_mobile_cpu.pbtxt",
+    output_name = "yolov5_mobile_cpu.binarypb",
+    deps = [":mobile_calculators"],
 )

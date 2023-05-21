@@ -1,9 +1,9 @@
 # MediaPipe graph that performs object detection with Yolov5 with TensorFlow Lite on CPU.
 
-# GPU buffer. (GpuBuffer)
+# CPU buffer. (ImageFrame)
 input_stream: "input_video"
 
-# Output image with rendered results. (GpuBuffer)
+# Output image with rendered results. (ImageFrame)
 output_stream: "output_video"
 # Detections. (std::vector<Detection>)
 output_stream: "detections"
@@ -11,7 +11,7 @@ output_stream: "detections"
 
 # Subgraph that detects faces.
 node {
-  calculator: "Yolov5ObjectDetectionGpu"
+  calculator: "Yolov5ObjectDetectionCpu"
   input_stream: "IMAGE:input_video"
   output_stream: "DETECTIONS:detections"
 }
@@ -32,7 +32,7 @@ node {
 # Draws annotations and overlays them on top of the input images.
 node {
   calculator: "AnnotationOverlayCalculator"
-  input_stream: "IMAGE_GPU:input_video"
+  input_stream: "IMAGE:input_video"
   input_stream: "render_data"
-  output_stream: "IMAGE_GPU:output_video"
+  output_stream: "IMAGE:output_video"
 }

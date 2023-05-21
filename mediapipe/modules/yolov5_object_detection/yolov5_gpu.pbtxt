@@ -25,7 +25,7 @@ input_stream: "IMAGE:image"
 output_stream: "DETECTIONS:detections"
 
 
-# Transforms the input image into a 640X640 tensor while keeping the aspect
+# Transforms the input image into a 320X320 tensor while keeping the aspect
 # ratio (what is expected by the corresponding face detection model), resulting
 # in potential letter boxing in the transformed image.
 node: {
@@ -35,8 +35,8 @@ node: {
   output_stream: "MATRIX:transform_matrix"
   options: {
     [mediapipe.ImageToTensorCalculatorOptions.ext] {
-      output_tensor_width: 640
-      output_tensor_height: 640
+      output_tensor_width: 320
+      output_tensor_height: 320
       keep_aspect_ratio: true
       output_tensor_float_range {
         min: 0.0
@@ -55,7 +55,7 @@ node {
   output_stream: "TENSORS:detection_tensors"
   options: {
     [mediapipe.InferenceCalculatorOptions.ext] {
-      model_path: "mediapipe/modules/yolov5_object_detection/yolov5n-fp16.tflite"
+      model_path: "mediapipe/modules/yolov5_object_detection/yolov5n_320_fp16.tflite"
       delegate {
          gpu {}
       }
@@ -70,7 +70,7 @@ node {
   options: {
     [mediapipe.TensorsToDetectionsCalculatorOptions.ext] {
       num_classes: 80
-      num_boxes: 25200
+      num_boxes: 6300
       num_coords: 4
       box_coord_offset: 0
       sigmoid_score: false
@@ -80,10 +80,23 @@ node {
   }
 }
 
+# Maps detection label IDs to the corresponding label text. The label map is
+# provided in the label_map_path option.
+node {
+  calculator: "DetectionLabelIdToTextCalculator"
+  input_stream: "unfiltered_detections"
+  output_stream: "labeled_detections"
+  options: {
+    [mediapipe.DetectionLabelIdToTextCalculatorOptions.ext] {
+      label_map_path: "mediapipe/modules/yolov5_object_detection/labels.txt"
+    }
+  }
+}
+
 # Performs non-max suppression to remove excessive detections.
 node {
   calculator: "NonMaxSuppressionCalculator"
-  input_stream: "unfiltered_detections"
+  input_stream: "labeled_detections"
   output_stream: "filtered_detections"
   options: {
     [mediapipe.NonMaxSuppressionCalculatorOptions.ext] {

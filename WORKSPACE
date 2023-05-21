@@ -363,6 +363,18 @@ http_archive(
     url = "https://github.com/opencv/opencv/releases/download/3.4.3/opencv-3.4.3-android-sdk.zip",
 )
 
+# You may run setup_android.sh to install Android SDK and NDK.
+android_sdk_repository(
+    name = "androidsdk",
+    path = "/home/ilia/temp/Android/Sdk"
+)
+
+android_ndk_repository(
+    name = "androidndk",
+    api_level = 21,
+    path = "/home/ilia/temp/Android/Sdk/ndk/21.1.6352462"
+)
+
 # After OpenCV 3.2.0, the pre-compiled opencv2.framework has google protobuf symbols, which will
 # trigger duplicate symbol errors in the linking stage of building a mediapipe ios app.
 # To get a higher version of OpenCV for iOS, opencv2.framework needs to be built from source with

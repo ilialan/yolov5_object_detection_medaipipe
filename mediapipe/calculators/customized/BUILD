@@ -27,13 +27,6 @@ licenses(["notice"])
 
 package(default_visibility = ["//visibility:public"])
 
-#exports_files(
-#    glob(["testdata/image_to_tensor/*"]),
-#    visibility = [
-#        "//mediapipe/calculators/image:__subpackages__",
-#        "//mediapipe/util:__subpackages__",
-#    ],
-#)
 
 config_setting(
     name = "disable_gpu",
