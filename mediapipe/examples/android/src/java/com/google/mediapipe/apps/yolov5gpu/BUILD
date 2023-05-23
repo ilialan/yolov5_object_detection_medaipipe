@@ -47,7 +47,7 @@ android_binary(
         "appName": "YOLOv5 Object Detection",
         "mainActivity": "com.google.mediapipe.apps.basic.MainActivity",
         "cameraFacingFront": "False",
-        "binaryGraphName": "yolov5_desktop_live_gpu.binarypb",
+        "binaryGraphName": "yolov5_mobile_gpu.binarypb",
         "inputVideoStreamName": "input_video",
         "outputVideoStreamName": "output_video",
         "flipFramesVertically": "True",
